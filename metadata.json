@@ -1,0 +1,7 @@
+{
+  "name": "Organization Automated System",
+  "description": "A comprehensive school management system with student, event, finance, and attendance management features.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
