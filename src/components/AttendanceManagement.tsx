@@ -69,7 +69,14 @@ export default function AttendanceManagement({ profile }: { profile: Profile | n
         .eq('event_id', eventId)
         .eq('day_number', day);
       if (error) throw error;
-      setAttendance(data || []);
+      
+      let filteredData = data || [];
+      if (profile?.organization_name === 'HERO Organization') {
+        filteredData = (data || []).filter((record: any) => 
+          ['Education Dept. Student', 'General Student'].includes(record.student?.department)
+        );
+      }
+      setAttendance(filteredData);
     } catch (error) {
       console.error('Error fetching attendance:', error);
     } finally {

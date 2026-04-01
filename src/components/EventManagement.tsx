@@ -223,7 +223,7 @@ export default function EventManagement({ profile }: { profile: Profile | null }
               <BarChart3 size={18} />
               Recent Event Stats
             </h4>
-            <div className="h-64">
+            <div className="h-64 min-h-[256px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie

@@ -32,6 +32,9 @@ export default function StudentManagement({ profile }: { profile: Profile | null
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [filterDept, setFilterDept] = useState('');
+  const [filterCollege, setFilterCollege] = useState('');
+  const [filterYear, setFilterYear] = useState('');
   const [page, setPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -43,7 +46,7 @@ export default function StudentManagement({ profile }: { profile: Profile | null
 
   useEffect(() => {
     fetchStudents();
-  }, [page, search]);
+  }, [page, search, filterDept, filterCollege, filterYear]);
 
   async function fetchStudents() {
     setLoading(true);
@@ -58,6 +61,18 @@ export default function StudentManagement({ profile }: { profile: Profile | null
 
       if (search) {
         query = query.or(`full_name.ilike.%${search}%,student_id.ilike.%${search}%`);
+      }
+
+      if (filterDept) {
+        query = query.eq('department', filterDept);
+      }
+
+      if (filterCollege) {
+        query = query.eq('college', filterCollege);
+      }
+
+      if (filterYear) {
+        query = query.eq('year_level', parseInt(filterYear));
       }
 
       const { data, count, error } = await query
@@ -114,7 +129,7 @@ export default function StudentManagement({ profile }: { profile: Profile | null
             return;
           }
 
-          const { error } = await supabase.from('students').insert(newStudents);
+          const { error } = await supabase.from('students').upsert(newStudents, { onConflict: 'student_id' });
           if (error) alert('Error importing students: ' + error.message);
           else {
             alert('Students imported successfully!');
@@ -170,7 +185,7 @@ export default function StudentManagement({ profile }: { profile: Profile | null
             return;
           }
 
-          const { error } = await supabase.from('students').insert(newStudents);
+          const { error } = await supabase.from('students').upsert(newStudents, { onConflict: 'student_id' });
           if (error) alert('Error importing students: ' + error.message);
           else {
             alert('Students imported successfully!');
@@ -235,15 +250,67 @@ export default function StudentManagement({ profile }: { profile: Profile | null
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-          <input
-            type="text"
-            placeholder="Search students (ID, Name)..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#000080] outline-none"
-          />
+        <div className="flex flex-1 flex-wrap items-center gap-3">
+          <div className="relative flex-1 max-w-xs">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+            <input
+              type="text"
+              placeholder="Search ID or Name..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#000080] outline-none"
+            />
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <select
+              value={filterDept}
+              onChange={(e) => setFilterDept(e.target.value)}
+              className="px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#000080] outline-none"
+            >
+              <option value="">All Depts</option>
+              <option value="Education Dept. Student">Education</option>
+              <option value="Indus Tech Dept. Student">Indus Tech</option>
+              <option value="General Student">General</option>
+            </select>
+
+            <select
+              value={filterCollege}
+              onChange={(e) => setFilterCollege(e.target.value)}
+              className="px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#000080] outline-none"
+            >
+              <option value="">All Colleges</option>
+              <option value="College of Education">Education</option>
+              <option value="College of Technology">Technology</option>
+            </select>
+
+            <select
+              value={filterYear}
+              onChange={(e) => setFilterYear(e.target.value)}
+              className="px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#000080] outline-none"
+            >
+              <option value="">All Years</option>
+              <option value="1">Year 1</option>
+              <option value="2">Year 2</option>
+              <option value="3">Year 3</option>
+              <option value="4">Year 4</option>
+              <option value="5">Year 5</option>
+            </select>
+
+            {(filterDept || filterCollege || filterYear) && (
+              <button 
+                onClick={() => {
+                  setFilterDept('');
+                  setFilterCollege('');
+                  setFilterYear('');
+                }}
+                className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                title="Clear Filters"
+              >
+                <X size={18} />
+              </button>
+            )}
+          </div>
         </div>
         <div className="flex items-center gap-3">
           <label className="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer flex items-center gap-2">

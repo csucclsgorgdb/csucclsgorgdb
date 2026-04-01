@@ -144,7 +144,7 @@ export default function Dashboard({ profile }: { profile: Profile | null }) {
               <p className="text-xs text-gray-400">Revenue analysis for the current week</p>
             </div>
           </div>
-          <div className="h-64">
+          <div className="h-64 min-h-[256px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={COLLECTION_DATA}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
@@ -171,7 +171,7 @@ export default function Dashboard({ profile }: { profile: Profile | null }) {
               <p className="text-xs text-gray-400">Student check-ins over the last 7 days</p>
             </div>
           </div>
-          <div className="h-64">
+          <div className="h-64 min-h-[256px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={ATTENDANCE_DATA}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
